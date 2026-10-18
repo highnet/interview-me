@@ -1,0 +1,7 @@
+{
+  "name": "interview-me",
+  "version": "0.1.0",
+  "description": "Your agent interviews you until it understands what you actually mean.",
+  "license": "MIT",
+  "skills": ["./skills/interview-me"]
+}

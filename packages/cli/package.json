@@ -1,0 +1,16 @@
+{
+  "name": "interview-me",
+  "version": "0.1.0",
+  "description": "An agent skill that interviews you until it understands what you actually mean.",
+  "type": "module",
+  "bin": { "interview-me": "./bin/interview-me.js" },
+  "files": ["bin", "src", "skill"],
+  "scripts": {
+    "sync-skill": "node scripts/sync-skill.js",
+    "prepack": "node scripts/sync-skill.js",
+    "test": "node scripts/sync-skill.js && node --test test/*.test.js"
+  },
+  "engines": { "node": ">=18" },
+  "keywords": ["agent-skill", "claude-code", "cursor", "codex", "skills", "interview", "requirements"],
+  "license": "MIT"
+}
