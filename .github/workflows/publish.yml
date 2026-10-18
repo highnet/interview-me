@@ -1,0 +1,62 @@
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+  # Manual escape hatch: release-please only reports release_created on the run
+  # that cuts the release, so a publish that fails for an environmental reason
+  # cannot be recovered by a re-run. Dispatch from main to publish it by hand.
+  workflow_dispatch:
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs['packages/cli--release_created'] }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter interview-me test
+      # The skill ships inside the tarball (prepack copies it from /skills).
+      - working-directory: packages/cli
+        run: npm pack --dry-run --json | grep -q '"skill/SKILL.md"'
+      # A version already on npm is skipped, not retried, so a re-run stays green.
+      - name: Check whether this version is already on npm
+        id: published
+        working-directory: packages/cli
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "interview-me@$version" version >/dev/null 2>&1; then
+            echo "interview-me@$version is already on npm; skipping publish."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      # OIDC trusted publishing (npm's Trusted Publisher setting for this repo
+      # and workflow filename): no token, with provenance. NPM_TOKEN is only a
+      # fallback for the very first publish, before the package exists on npm.
+      - if: steps.published.outputs.skip != 'true'
+        working-directory: packages/cli
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
