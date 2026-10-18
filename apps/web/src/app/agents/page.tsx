@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { CopyCommand } from "@/components/copy-command";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { agents, siteUrl } from "@/lib/site";
 
@@ -29,6 +30,8 @@ export default function AgentsPage() {
           </h1>
           <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-brand-muted">
             The contract for agents. Fetch the skill, follow it, and install it for your human if they want it next time.
+            Read it in full at{" "}
+            <a href="/skill.md" className="text-brand-foreground underline decoration-highlight decoration-2 underline-offset-4">/skill.md</a>.
           </p>
           <div className="mt-8 space-y-2">
             <CopyCommand command={`curl -s ${siteUrl}/skill.md`} />
@@ -70,6 +73,7 @@ export default function AgentsPage() {
           </tbody>
         </table>
       </main>
+      <SiteFooter />
     </>
   );
 }

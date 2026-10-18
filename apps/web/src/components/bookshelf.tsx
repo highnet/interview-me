@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 const SPINES = [
   { h: "h-60 sm:h-72", w: "w-11 sm:w-16", tone: "bg-brand text-brand-foreground" },
   { h: "h-72 sm:h-80", w: "w-12 sm:w-[4.5rem]", tone: "bg-foreground text-background" },
-  { h: "h-64 sm:h-[19rem]", w: "w-10 sm:w-14", tone: "bg-highlight text-highlight-foreground" },
+  { h: "h-64 sm:h-[19rem]", w: "w-11 sm:w-14", tone: "bg-highlight text-highlight-foreground" },
   { h: "h-56 sm:h-[17rem]", w: "w-11 sm:w-16", tone: "bg-card text-foreground ring-1 ring-inset ring-border" },
   { h: "h-[17rem] sm:h-[19.5rem]", w: "w-12 sm:w-[4.5rem]", tone: "bg-brand-deep text-brand-foreground" },
 ];
@@ -22,7 +22,7 @@ const surname = (author: string) => author.split(" & ")[0].split(" ").at(-1);
 
 export function Bookshelf() {
   const [active, setActive] = useState(IDS[0]);
-  const { tabProps, panelProps } = useRovingTabs(IDS, active, setActive);
+  const { tabProps, panelProps, focusTab } = useRovingTabs(IDS, active, setActive);
   const index = IDS.indexOf(active);
   const book = sources[index];
   const next = IDS[(index + 1) % IDS.length];
@@ -58,7 +58,8 @@ export function Bookshelf() {
         </p>
       </div>
 
-      <div {...panelProps("book")} key={active} className="max-w-2xl motion-safe:animate-[rise_0.45s_var(--ease-out-quart)]">
+      <div {...panelProps("book")} className="max-w-2xl">
+        <div key={active} className="motion-safe:animate-[rise_0.45s_var(--ease-out-quart)]">
         <p className="text-[15px] text-muted-foreground">
           {book.author}, {book.year}
         </p>
@@ -94,9 +95,14 @@ export function Bookshelf() {
           ))}
         </ul>
 
+        </div>
+
         <button
           type="button"
-          onClick={() => setActive(next)}
+          onClick={() => {
+            setActive(next);
+            focusTab(next);
+          }}
           className="group mt-6 inline-flex min-h-11 items-center gap-2 rounded-full py-2 pr-2 text-[15px] font-medium text-brand-text"
         >
           Next: {next}

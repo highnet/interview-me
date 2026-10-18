@@ -28,30 +28,34 @@ spacing: sections py-24 → lg:py-32; max-w-6xl; 20px mobile gutter
 ---
 
 ## Overview
-A developer mid-afternoon, an idea half-formed, wanting to be understood before anything gets built. The site is a conversation. The hero shows an interview you take part in, and every example prompt is drawn as one of your answers.
+A developer mid-afternoon, an idea half-formed, wanting to be understood before anything gets built. The site is a conversation, and the conversation carries the page:
+- The hero opens with the visitor's request (a yellow bubble), and the agent's reply is the H1.
+- The interview continues on the same blue, with no card. The brief is the only paper object in it.
+- Further down, the method is shown as the brief an interview produces, with the visitor's answers highlighted.
 
 ## Colors
 - **Strategy: Committed.** Ultramarine carries the hero and the install close. The middle sections use a cool off-white tinted toward the brand hue, not toward warmth.
 - **Highlight yellow means "you said this."** It marks user answers, example prompts and the headline's second beat. Never use it for decoration.
 - **`brand-text` for brand-colored text** on page surfaces. Raw `brand` text is 1.98:1 in dark mode.
-- **Contrast:** every token pair is ≥4.5:1 in both themes. The script is in the PR notes.
+- **Dark mode:** the same ultramarine room with the lights down. Background, muted, card and muted text are all tinted toward hue 266, never neutral gray or black.
+- **Contrast:** every text token pair is ≥4.5:1 in both themes.
 
 ## Typography
 - Funnel Display has open, talkative counters; it is used for headings, the book spines and the brief title.
-- Hero: clamp(3rem, 7.5vw, 6rem). Section headings: clamp(2.25rem, 4.6vw, 3.75rem).
+- Hero H1: clamp(2.9rem, 7vw, 5.5rem). Demo questions: clamp(1.35rem, 2.4vw, 1.75rem). Section headings: clamp(2.25rem, 4.6vw, 3.75rem).
 - Body: 17–18px with relaxed leading.
 - Labels are sentence case. There are no uppercase eyebrows.
 
 ## Layout
-- The hero is a 2-column grid, copy then the demo (`minmax(0,30rem)`), and stacks on mobile.
-- Section rhythm: plain, muted, plain, ruled, brand.
+- **Hero:** one column (`max-w-4xl`), a conversation rather than a split layout. The Human and Agent panels share one grid cell (`grid-cols-[minmax(0,1fr)]`), so switching never moves the page.
+- **Section rhythm:** plain, muted (the brief), plain, ruled (books), brand (close).
+- **Close:** one column on brand, continuing the conversation: your yellow request, the heading, then the install tabs.
 - Use `min-w-0` on grid items that hold commands.
 
 ## Motion
-- Transcript lines enter with a 450ms ease-out-quart rise and unblur. With reduced motion, this becomes a 150ms fade.
-- Book spines lift when selected.
-- The only loop is the recording dot.
-- The demo waits for a click and auto-answers only after 6s of idle. It can be paused.
+- Transcript lines enter with a 450ms ease-out-quart rise and unblur, and the bookshelf panel uses the same `rise`. With reduced motion, these become a fade or nothing.
+- Book spines lift when selected. Nothing loops; the status dot is static.
+- The demo shows its first question from the start, waits for a click, and auto-answers only after 6s of idle. It can be paused. Answered options give way to your reply.
 
 ## Components
 - CopyCommand: scrolls instead of truncating, shows "Copied" text, has a status region and a 44px button.
