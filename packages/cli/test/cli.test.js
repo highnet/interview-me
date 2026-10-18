@@ -3,30 +3,39 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { detectAgents, installTo, installedAgents, parseArgs, removeFrom } from "../src/cli.js";
+import { AGENTS } from "../src/agents.js";
+import { detectAgents, installTo, installedAgents, parseArgs, projectScope, removeFrom } from "../src/cli.js";
 
-const tmp = () => mkdtempSync(join(tmpdir(), "interview-me-"));
+const tmp = () => projectScope(mkdtempSync(join(tmpdir(), "interview-me-")));
 
 test("parseArgs reads command and flags", () => {
   assert.deepEqual(parseArgs(["install", "-a", "claude,cursor", "-y"]), {
     command: "install", agents: ["claude", "cursor"], global: false, yes: true,
   });
-  assert.equal(parseArgs(["install", "--agent=all"]).agents.length, 6);
+  assert.equal(parseArgs(["install", "--agent=all"]).agents.length, Object.keys(AGENTS).length);
 });
 
 test("detects agents from project markers", () => {
-  const root = tmp();
-  mkdirSync(join(root, ".claude"));
-  mkdirSync(join(root, ".cursor"));
-  assert.deepEqual(detectAgents(root), ["claude", "cursor"]);
+  const scope = tmp();
+  mkdirSync(join(scope.root, ".claude"));
+  mkdirSync(join(scope.root, ".cursor"));
+  assert.deepEqual(detectAgents(scope, { checkPath: false }), ["claude", "cursor"]);
 });
 
 test("install, list and uninstall round-trip", () => {
-  const root = tmp();
-  installTo(root, ["claude", "codex"]);
-  assert.ok(existsSync(join(root, ".claude/skills/interview-me/SKILL.md")));
-  assert.ok(existsSync(join(root, ".agents/skills/interview-me/references/question-bank.md")));
-  assert.deepEqual(installedAgents(root), ["claude", "codex"]);
-  removeFrom(root, ["claude"]);
-  assert.deepEqual(installedAgents(root), ["codex"]);
+  const scope = tmp();
+  installTo(scope, ["claude", "codex"]);
+  assert.ok(existsSync(join(scope.root, ".claude/skills/interview-me/SKILL.md")));
+  assert.ok(existsSync(join(scope.root, ".agents/skills/interview-me/references/sources.md")));
+  assert.deepEqual(installedAgents(scope), ["claude", "codex", "antigravity"]);
+  removeFrom(scope, ["claude"]);
+  assert.deepEqual(installedAgents(scope), ["codex", "antigravity"]);
+});
+
+test("agents sharing a folder are written once", () => {
+  assert.equal(installTo(tmp(), ["codex", "antigravity"]).length, 1);
+});
+
+test("every agent resolves a global folder", () => {
+  for (const a of Object.values(AGENTS)) assert.ok(a.global("/home/x", {}).startsWith("/"));
 });

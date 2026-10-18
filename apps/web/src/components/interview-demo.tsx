@@ -12,9 +12,9 @@ const PROMPT = "I want a weekly digest email for our app. Use the interview-me s
 const ROUNDS: Round[] = [
   {
     note: "Read src/emails/ and saw you already send receipts with React Email. I'll reuse that.",
-    q: "When someone opens the digest, what should they come away with?",
-    options: ["What changed in my workspace", "What I missed from teammates", "Nudges to come back"],
-    pick: 1,
+    q: "What's the real challenge here: what do people miss today?",
+    options: ["Teammates' work gets buried", "Too many notifications", "Nothing, it's a nudge"],
+    pick: 0,
   },
   {
     q: "Name an email you actually look forward to. What do you like about it?",
@@ -35,10 +35,10 @@ const BRIEF = [
   ["Assumed", "Sends Monday 9am local time. Opt-out is one click."],
 ];
 
-type Step = { kind: "q"; i: number } | { kind: "a"; i: number } | { kind: "brief" };
+type Step = { kind: "q"; i: number } | { kind: "a"; i: number } | { kind: "brief" } | { kind: "yes" } | { kind: "build" };
 
 function timeline(): Step[] {
-  return [...ROUNDS.flatMap((_, i) => [{ kind: "q", i } as Step, { kind: "a", i } as Step]), { kind: "brief" }];
+  return [...ROUNDS.flatMap((_, i) => [{ kind: "q", i } as Step, { kind: "a", i } as Step]), { kind: "brief" }, { kind: "yes" }, { kind: "build" }];
 }
 
 export function InterviewDemo() {
@@ -83,7 +83,7 @@ export function InterviewDemo() {
       <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
         <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
           <span className={cn("size-1.5 rounded-full", shown < steps.length ? "animate-pulse bg-accent" : "bg-muted-foreground/40")} />
-          {shown < steps.length ? "interviewing" : "brief ready"}
+          {shown < steps.length - 2 ? "rec · interviewing" : "building"}
         </div>
         <button
           type="button"
@@ -94,7 +94,7 @@ export function InterviewDemo() {
         </button>
       </div>
 
-      <div ref={scroller} className="h-[460px] space-y-4 overflow-y-auto p-4 sm:p-5" aria-live="polite">
+      <div ref={scroller} className="ruled h-[460px] space-y-4 overflow-y-auto p-4 sm:p-5" aria-live="polite">
         <Bubble side="user">{PROMPT}</Bubble>
 
         <AnimatePresence initial={false}>
@@ -145,6 +145,22 @@ export function InterviewDemo() {
                 </Enter>
               );
             }
+            if (step.kind === "yes") {
+              return (
+                <Enter key="yes">
+                  <Bubble side="user">That&rsquo;s right.</Bubble>
+                </Enter>
+              );
+            }
+            if (step.kind === "build") {
+              return (
+                <Enter key="build">
+                  <p className="font-mono text-[12px] text-muted-foreground">
+                    <span className="text-accent">→</span> Brief confirmed. Starting with the Monday email template…
+                  </p>
+                </Enter>
+              );
+            }
             return (
               <Enter key="brief">
                 <div className="rounded-xl border border-dashed border-accent/50 bg-background p-4">
@@ -160,7 +176,7 @@ export function InterviewDemo() {
                       </div>
                     ))}
                   </dl>
-                  <p className="mt-4 text-[14px] text-muted-foreground">Does this capture it? Anything wrong or missing?</p>
+                  <p className="mt-4 text-[14px] text-muted-foreground">Does this capture it? Anything wrong, missing, or overstated?</p>
                 </div>
               </Enter>
             );

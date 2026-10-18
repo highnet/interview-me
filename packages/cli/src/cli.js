@@ -1,6 +1,6 @@
 import { cpSync, existsSync, rmSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createInterface } from "node:readline/promises";
 import { AGENTS, SKILL_NAME } from "./agents.js";
@@ -37,28 +37,44 @@ export function parseArgs(argv) {
   return opts;
 }
 
-export function detectAgents(root) {
+// A scope is where skills go: this project, or the user's home (--global).
+export function scopeFor(global, env = process.env) {
+  const home = homedir();
+  return global
+    ? { root: home, dirOf: (id) => AGENTS[id].global(home, env) }
+    : { root: process.cwd(), dirOf: (id) => join(process.cwd(), AGENTS[id].project) };
+}
+
+export function projectScope(root) {
+  return { root, dirOf: (id) => join(root, AGENTS[id].project) };
+}
+
+const onPath = (bin, env = process.env) =>
+  (env.PATH ?? "").split(delimiter).some((d) => d && ["", ".cmd", ".exe"].some((ext) => existsSync(join(d, bin + ext))));
+
+export function detectAgents(scope, { checkPath = true } = {}) {
   return Object.entries(AGENTS)
-    .filter(([, a]) => a.detect.some((p) => existsSync(join(root, p))))
+    .filter(([, a]) => a.detect.some((p) => existsSync(join(scope.root, p))) || (checkPath && onPath(a.bin)))
     .map(([id]) => id);
 }
 
-export function installedAgents(root) {
-  return Object.keys(AGENTS).filter((id) => existsSync(join(root, AGENTS[id].dir, SKILL_NAME)));
+export function installedAgents(scope) {
+  return Object.keys(AGENTS).filter((id) => existsSync(join(scope.dirOf(id), SKILL_NAME)));
 }
 
-export function installTo(root, ids) {
-  return ids.map((id) => {
-    const dest = join(root, AGENTS[id].dir, SKILL_NAME);
+// Several agents share a folder (e.g. .agents/skills); write each folder once.
+const destinations = (scope, ids) => [...new Set(ids.map((id) => join(scope.dirOf(id), SKILL_NAME)))];
+
+export function installTo(scope, ids) {
+  return destinations(scope, ids).map((dest) => {
     rmSync(dest, { recursive: true, force: true });
     cpSync(SKILL_SRC, dest, { recursive: true });
     return dest;
   });
 }
 
-export function removeFrom(root, ids) {
-  return ids.map((id) => {
-    const dest = join(root, AGENTS[id].dir, SKILL_NAME);
+export function removeFrom(scope, ids) {
+  return destinations(scope, ids).map((dest) => {
     rmSync(dest, { recursive: true, force: true });
     return dest;
   });
@@ -90,35 +106,35 @@ function validate(ids) {
 
 export async function run(argv) {
   const opts = parseArgs(argv);
-  const root = opts.global ? homedir() : process.cwd();
+  const scope = scopeFor(opts.global);
 
   switch (opts.command) {
     case "install": {
-      const detected = detectAgents(root);
+      const detected = detectAgents(scope);
       const interactive = !opts.yes && process.stdin.isTTY;
       const ids = validate(opts.agents ?? (interactive ? await pickAgents(detected) : detected.length ? detected : ["claude"]));
-      for (const p of installTo(root, ids)) console.log(`  ✓ ${p}`);
-      console.log(`\nDone. Try it: "I want a new onboarding flow. Use the interview-me skill to understand what I mean."`);
+      for (const p of installTo(scope, ids)) console.log(`  ✓ ${p}`);
+      console.log(`\nDone. Next time an idea is fuzzy, tell your agent:\n  "Use the interview-me skill to understand what I mean."`);
       return 0;
     }
     case "update": {
-      const ids = validate(opts.agents ?? installedAgents(root));
+      const ids = validate(opts.agents ?? installedAgents(scope));
       if (!ids.length) {
         console.log("Nothing installed here. Run `npx interview-me install` first.");
         return 1;
       }
-      for (const p of installTo(root, ids)) console.log(`  ↻ ${p}`);
+      for (const p of installTo(scope, ids)) console.log(`  ↻ ${p}`);
       return 0;
     }
     case "uninstall": {
-      const ids = validate(opts.agents ?? installedAgents(root));
-      for (const p of removeFrom(root, ids)) console.log(`  ✕ ${p}`);
+      const ids = validate(opts.agents ?? installedAgents(scope));
+      for (const p of removeFrom(scope, ids)) console.log(`  ✕ ${p}`);
       return 0;
     }
     case "list": {
-      const ids = installedAgents(root);
+      const ids = installedAgents(scope);
       if (!ids.length) console.log("Not installed here.");
-      for (const id of ids) console.log(`  ${AGENTS[id].label.padEnd(16)} ${join(root, AGENTS[id].dir, SKILL_NAME)}`);
+      for (const id of ids) console.log(`  ${AGENTS[id].label.padEnd(20)} ${join(scope.dirOf(id), SKILL_NAME)}`);
       return 0;
     }
     default:

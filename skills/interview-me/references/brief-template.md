@@ -1,13 +1,22 @@
 # Brief: <name>
 
-> One sentence: who it's for, and what changes for them.
+> One sentence: who it's for, and what changes for them. The user said "that's right" to this line.
 
-**Status:** draft · confirmed on <date>
+**Status:** draft · confirmed <date>
+**Kind:** feature · design · API · data · writing · strategy · research · decision · other
+
+## The real challenge
+The problem under the request, in the user's words.
 
 ## The picture
-A short scene in plain words: someone using this at its best.
+A short scene or example in plain words. What it looks like at its best.
 
 ## Must have
+Functions: what it does.
+- …
+
+## Should feel
+Qualities: how it should come across.
 - …
 
 ## Must not be
@@ -19,9 +28,9 @@ A short scene in plain words: someone using this at its best.
 | … | … | … |
 
 ## Constraints
-- Stack / platform:
-- Deadline / scope:
+- Already decided:
 - Can't change:
+- Others with a say:
 
 ## Success looks like
 - …
@@ -30,5 +39,5 @@ A short scene in plain words: someone using this at its best.
 Things I filled in that the user didn't state outright. Confirm or correct them.
 - …
 
-## Suggested first step
-The smallest thing to build first that would prove the direction.
+## First step
+The smallest piece of work that proves the direction. Work starts here once the brief is confirmed.

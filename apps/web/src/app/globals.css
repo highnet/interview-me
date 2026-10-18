@@ -2,6 +2,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Scene: a reporter's notebook. Warm paper, graphite ink, one red pen. */
 :root {
   --background: oklch(0.978 0.007 85);
   --foreground: oklch(0.21 0.012 60);
@@ -15,8 +16,8 @@
   --ring: oklch(0.63 0.185 38 / 0.5);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Night desk: same notebook under a lamp. */
+.dark {
     --background: oklch(0.17 0.008 60);
     --foreground: oklch(0.94 0.008 85);
     --muted: oklch(0.22 0.009 60);
@@ -27,7 +28,6 @@
     --accent-foreground: oklch(0.17 0.008 60);
     --accent-soft: oklch(0.3 0.06 40);
     --ring: oklch(0.7 0.17 40 / 0.5);
-  }
 }
 
 @theme inline {
@@ -41,15 +41,14 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-soft: var(--accent-soft);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-serif: var(--font-instrument-serif);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 @layer base {
   * { border-color: var(--border); }
-  html { scroll-behavior: smooth; }
   body {
     background: var(--background);
     color: var(--foreground);
@@ -59,7 +58,11 @@
   ::selection { background: var(--accent-soft); }
 }
 
+/* Steno-pad ruling, used behind the transcript. */
+@utility ruled {
+  background-image: repeating-linear-gradient(to bottom, transparent 0 27px, color-mix(in oklch, var(--border) 70%, transparent) 27px 28px);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
