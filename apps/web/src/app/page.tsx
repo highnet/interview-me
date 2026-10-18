@@ -6,6 +6,7 @@ import { CopyCommand } from "@/components/copy-command";
 import { InstallTabs } from "@/components/install-tabs";
 import { InterviewDemo } from "@/components/interview-demo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { agents, repoUrl, sources } from "@/lib/site";
@@ -31,9 +32,7 @@ export default function Home() {
     <>
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
         <Link href="/" className="flex items-center gap-2 font-mono text-[13px] font-medium">
-          <span className="relative grid size-6 place-items-center rounded-full bg-accent font-serif text-[15px] italic text-accent-foreground">
-            ?
-          </span>
+          <Logo />
           interview-me
         </Link>
         <nav aria-label="Primary navigation" className="flex items-center gap-1 text-[13px]">
