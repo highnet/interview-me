@@ -27,7 +27,7 @@ const METHODS = [
   {
     id: "chat",
     label: "Any chat",
-    steps: [{ cmd: "Read https://interviewskill.me/skill.md and interview me.", note: "No install. Paste into ChatGPT, Claude.ai, or any agent with web access." }],
+    steps: [{ cmd: "Read https://interviewme.at/skill.md and interview me.", note: "No install. Paste into ChatGPT, Claude.ai, or any agent with web access." }],
   },
 ];
 

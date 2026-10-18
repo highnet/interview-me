@@ -1,4 +1,4 @@
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://interviewskill.me";
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://interviewme.at";
 export const repoUrl = "https://github.com/highnet/interview-me";
 
 // Mirrors packages/cli/src/agents.js (which mirrors highnet/variantly).
