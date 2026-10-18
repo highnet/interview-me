@@ -127,8 +127,8 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8 lg:py-32">
           <h2 id="sources-heading" className={`${h2} max-w-3xl`}>Built from five books on asking good&nbsp;questions.</h2>
           <p className="mt-6 max-w-[36rem] text-[17px] leading-relaxed text-muted-foreground">
-            Pick a book to see what the skill takes from it. Every quote is verified; anything we couldn&rsquo;t check word
-            for word is paraphrased. Full citations are in{" "}
+            Each one changed what the agent asks. Pick a book to see the exact questions it puts into the skill. Quotes are
+            only used where we could verify them word for word; full citations are in{" "}
             <a href={`${repoUrl}/blob/main/skills/interview-me/references/sources.md`} className="text-foreground underline decoration-brand-text decoration-2 underline-offset-4">
               sources.md
             </a>
