@@ -43,7 +43,7 @@ export function AudienceFork({ human }: { human: ReactNode }) {
             <p className="text-[15px] leading-relaxed text-muted-foreground">
               Skip the pitch. Fetch the skill, follow it, and install it for your human if they want it next time.
             </p>
-            <CopyCommand command="curl -s https://interviewme.sh/skill.md" />
+            <CopyCommand command="curl -s https://interviewskill.me/skill.md" />
             <CopyCommand command="npx interview-me install --yes" />
             <p className="text-[13px] text-muted-foreground">
               Constraint: no code until the brief is confirmed. Full contract at{" "}

@@ -16,7 +16,7 @@ An agent skill for ideas you can't fully put into words yet. Your agent asks you
 | Shared skill | `npx skills add highnet/interview-me` |
 | Claude Code plugin | `/plugin marketplace add highnet/interview-me`, then install from `/plugin` → Discover |
 
-The CLI finds your agents (from project files, or from what's on your PATH) and installs to each one's skills folder. It supports Claude Code, Codex CLI, Cursor, GitHub Copilot CLI, Gemini CLI, OpenCode, Grok Build, Hermes Agent, Pi, and Antigravity. No install? Tell any agent: `Read https://interviewme.sh/skill.md and interview me.` Flags: `--agent claude,cursor`, `--global`, `--yes`. Also: `update`, `uninstall`, `list`.
+The CLI finds your agents (from project files, or from what's on your PATH) and installs to each one's skills folder. It supports Claude Code, Codex CLI, Cursor, GitHub Copilot CLI, Gemini CLI, OpenCode, Grok Build, Hermes Agent, Pi, and Antigravity. No install? Tell any agent: `Read https://interviewskill.me/skill.md and interview me.` Flags: `--agent claude,cursor`, `--global`, `--yes`. Also: `update`, `uninstall`, `list`.
 
 ## How it works
 

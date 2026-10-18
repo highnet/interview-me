@@ -27,7 +27,7 @@ export default function AgentsPage() {
 
       <h2 className="mt-12 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Fetch the skill</h2>
       <div className="mt-3 space-y-2">
-        <CopyCommand command="curl -s https://interviewme.sh/skill.md" />
+        <CopyCommand command="curl -s https://interviewskill.me/skill.md" />
         <CopyCommand command="npx interview-me install --yes" />
       </div>
 
