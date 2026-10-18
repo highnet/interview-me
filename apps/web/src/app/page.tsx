@@ -49,7 +49,8 @@ export default function Home() {
 
       <main id="top">
         <section aria-labelledby="hero-heading" className="mx-auto grid max-w-6xl items-start gap-12 px-5 pb-24 pt-8 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pt-16">
-          <div>
+          {/* min-w-0: grid items default to min-width:auto, which lets long commands widen the page. */}
+          <div className="min-w-0">
             <AudienceFork
               human={
                 <>
@@ -72,7 +73,7 @@ export default function Home() {
               }
             />
           </div>
-          <div className="lg:pt-12">
+          <div className="min-w-0 lg:pt-12">
             <InterviewDemo />
           </div>
         </section>
