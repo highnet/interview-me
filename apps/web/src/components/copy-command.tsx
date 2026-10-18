@@ -2,40 +2,38 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export function CopyCommand({ command, className }: { command: string; className?: string }) {
-  const [copied, setCopied] = useState(false);
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(command);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
+      setState("copied");
     } catch {
-      // Clipboard can be blocked; the command stays selectable.
+      setState("failed");
     }
+    setTimeout(() => setState("idle"), 2000);
   }
 
   return (
-    <div
-      className={cn(
-        "group flex items-center gap-3 rounded-xl border border-border bg-card py-2 pl-4 pr-2 font-mono text-[13.5px]",
-        className,
-      )}
-    >
-      <span aria-hidden className="select-none text-accent">$</span>
-      <code className="min-w-0 flex-1 truncate">{command}</code>
+    <div className={cn("flex items-center gap-2 rounded-xl bg-card py-1.5 pl-4 pr-1.5 font-mono text-[14px] text-foreground", className)}>
+      <span aria-hidden className="select-none text-muted-foreground">$</span>
+      {/* Scrolls instead of truncating, so the whole command stays readable on phones. */}
+      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap py-2 [scrollbar-width:none]">{command}</code>
+      <span role="status" className="sr-only">
+        {state === "copied" ? "Copied to clipboard" : state === "failed" ? "Copy failed. Select the command to copy it." : ""}
+      </span>
       <button
         type="button"
         onClick={copy}
-        aria-label={copied ? "Copied" : `Copy ${command}`}
-        className="grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`Copy ${command}`}
+        className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 font-sans text-[13px] font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
       >
-        <span className="relative size-4">
-          <Copy className={cn("absolute inset-0 size-4 transition-all duration-200", copied && "scale-50 opacity-0")} />
-          <Check className={cn("absolute inset-0 size-4 text-accent transition-all duration-200", !copied && "scale-50 opacity-0")} />
-        </span>
+        {state === "copied" ? <Check className="size-4 text-brand-text" /> : <Copy className="size-4" />}
+        <span className="hidden sm:inline">{state === "copied" ? "Copied" : state === "failed" ? "Select it" : "Copy"}</span>
       </button>
     </div>
   );

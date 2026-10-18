@@ -20,15 +20,17 @@ Ask first, then build. The method is grounded in five books on interviewing, and
 Curious, warm, brief. A good interviewer, not a form.
 
 ## Anti-references
+- The editorial-typographic lane: cream paper, italic display serif, mono eyebrows.
 - Purple gradients.
 - Grids of icon cards.
 - "Supercharge your workflow" copy.
 - Fake testimonials.
 
 ## Design principles
-1. The interview is the hero. Show a conversation, don't describe one.
-2. One accent, used like a red pen.
-3. Editorial type: serif headlines, sans body, mono for anything an agent or terminal would say.
+1. The interview is the hero. Show a conversation you take part in; don't describe one.
+2. Committed ultramarine, with highlighter yellow meaning "you said this."
+3. A talkative grotesk for headings, a quiet sans for the body, and mono only for real commands.
+4. Reassure at the call to action: say what install writes, and how to undo it.
 
 ## Accessibility & inclusion
 - WCAG AA contrast in both themes.

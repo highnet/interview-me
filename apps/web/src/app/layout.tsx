@@ -1,20 +1,26 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
-import { Instrument_Serif } from "next/font/google";
+import { Funnel_Display } from "next/font/google";
 
 import { Providers } from "@/components/providers";
 import { siteUrl } from "@/lib/site";
 
 import "./globals.css";
 
-// Instrument Serif: a condensed editorial face, like a magazine interview headline.
-const instrumentSerif = Instrument_Serif({
+// Funnel Display: a grotesk with open, talkative counters. Headings only; Geist carries the body.
+const funnelDisplay = Funnel_Display({
   subsets: ["latin"],
-  variable: "--font-instrument-serif",
-  style: ["normal", "italic"],
-  weight: "400",
+  variable: "--font-funnel-display",
+  weight: ["500", "600"],
 });
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#2a3fc4" },
+    { media: "(prefers-color-scheme: dark)", color: "#243399" },
+  ],
+};
 
 const title = "interview-me: your agent asks before it builds";
 const description =
@@ -33,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable}`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${funnelDisplay.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
