@@ -4,7 +4,7 @@
   "description": "An agent skill that interviews you until it understands what you actually mean.",
   "type": "module",
   "bin": {
-    "interview-me": "./bin/interview-me.js"
+    "interview-me": "bin/interview-me.js"
   },
   "files": [
     "bin",
