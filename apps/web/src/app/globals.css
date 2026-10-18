@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.978 0.007 85);
+  --foreground: oklch(0.21 0.012 60);
+  --muted: oklch(0.945 0.009 85);
+  --muted-foreground: oklch(0.5 0.012 60);
+  --border: oklch(0.89 0.01 80);
+  --card: oklch(0.993 0.004 85);
+  --accent: oklch(0.63 0.185 38);
+  --accent-foreground: oklch(0.99 0.005 85);
+  --accent-soft: oklch(0.93 0.045 45);
+  --ring: oklch(0.63 0.185 38 / 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.17 0.008 60);
+    --foreground: oklch(0.94 0.008 85);
+    --muted: oklch(0.22 0.009 60);
+    --muted-foreground: oklch(0.68 0.01 70);
+    --border: oklch(0.29 0.01 60);
+    --card: oklch(0.2 0.009 60);
+    --accent: oklch(0.7 0.17 40);
+    --accent-foreground: oklch(0.17 0.008 60);
+    --accent-soft: oklch(0.3 0.06 40);
+    --ring: oklch(0.7 0.17 40 / 0.5);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

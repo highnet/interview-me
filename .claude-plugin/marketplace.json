@@ -1,0 +1,12 @@
+{
+  "name": "interview-me",
+  "owner": { "name": "highnet" },
+  "plugins": [
+    {
+      "name": "interview-me",
+      "source": "./",
+      "description": "Your agent interviews you until it understands what you actually mean.",
+      "version": "0.1.0"
+    }
+  ]
+}
