@@ -8,8 +8,6 @@ import { cn } from "@/lib/utils";
 
 type Round = { q: string; note?: string; options: string[]; pick: number };
 
-const PROMPT = "I want a weekly digest email for our app. Use the interview-me skill to get what I mean.";
-
 const ROUNDS: Round[] = [
   {
     note: "Read src/emails/. You already send receipts with React Email, so I'll build on that.",
@@ -49,10 +47,11 @@ const STEPS: Step[] = [
 const IDLE_MS = 6000;
 
 export function InterviewDemo() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.25 });
   const reduced = useReducedMotion();
-  const [shown, setShown] = useState(0);
+  // The first question is there from the start, so the transcript is never an empty block.
+  const [shown, setShown] = useState(1);
   const [picks, setPicks] = useState<number[]>(ROUNDS.map((r) => r.pick));
   const [paused, setPaused] = useState(false);
 
@@ -63,16 +62,10 @@ export function InterviewDemo() {
 
   useEffect(() => {
     if (!inView || done || paused) return;
-    const delay = shown === 0 ? 400 : waitingOn !== null ? IDLE_MS : current?.kind === "brief" ? 2200 : 900;
+    const delay = waitingOn !== null ? IDLE_MS : current?.kind === "brief" ? 2200 : 900;
     const t = setTimeout(() => setShown((s) => s + 1), delay);
     return () => clearTimeout(t);
   }, [inView, shown, done, paused, waitingOn, current]);
-
-  // Keep the newest line in view inside the transcript, never by scrolling the page.
-  const scroller = useRef<HTMLOListElement>(null);
-  useEffect(() => {
-    scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: reduced ? "auto" : "smooth" });
-  }, [shown, reduced]);
 
   function choose(round: number, option: number) {
     setPicks((p) => p.map((v, i) => (i === round ? option : v)));
@@ -82,18 +75,18 @@ export function InterviewDemo() {
   function replay() {
     setPicks(ROUNDS.map((r) => r.pick));
     setPaused(false);
-    setShown(0);
+    setShown(1);
   }
 
   const latest = current ? announce(current, picks) : "";
 
   return (
     <LazyMotion features={domAnimation} strict>
-      <figure ref={ref} className="overflow-hidden rounded-2xl bg-card text-foreground">
-        <figcaption className="flex items-center justify-between gap-2 border-b border-border py-1 pl-4 pr-1">
-          <span className="flex items-center gap-2 text-[13px] text-muted-foreground">
-            <span aria-hidden className={cn("size-2 rounded-full", done ? "bg-brand" : "animate-pulse bg-[oklch(0.62_0.22_27)]")} />
-            {done ? "Building from the brief" : confirmed ? "Brief confirmed" : "Interviewing"}
+      <figure ref={ref} className="text-brand-foreground">
+        <figcaption className="flex items-center justify-between gap-2 border-b border-brand-foreground/15 pb-1">
+          <span className="flex items-center gap-2 text-[14px] text-brand-muted">
+            <span aria-hidden className={cn("size-2 rounded-full", done ? "bg-highlight" : "bg-[oklch(0.72_0.2_27)]")} />
+            {done ? "Building from the brief" : confirmed ? "Brief confirmed" : paused ? "Paused" : "Your turn. Answer as if it were your idea."}
           </span>
           <span className="flex">
             {!done && (
@@ -101,7 +94,7 @@ export function InterviewDemo() {
                 type="button"
                 onClick={() => setPaused((p) => !p)}
                 aria-label={paused ? "Resume demo" : "Pause demo"}
-                className="grid size-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="grid size-11 place-items-center rounded-lg text-brand-muted transition-colors hover:bg-brand-deep hover:text-brand-foreground"
               >
                 {paused ? <Play className="size-4" /> : <Pause className="size-4" />}
               </button>
@@ -109,7 +102,7 @@ export function InterviewDemo() {
             <button
               type="button"
               onClick={replay}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-2 text-[14px] text-brand-muted transition-colors hover:bg-brand-deep hover:text-brand-foreground"
             >
               <RotateCcw className="size-3.5" /> Replay
             </button>
@@ -118,8 +111,7 @@ export function InterviewDemo() {
 
         <div aria-live="polite" className="sr-only">{latest}</div>
 
-        <ol ref={scroller} role="log" aria-label="Example interview" className="h-[440px] space-y-4 overflow-y-auto p-4 sm:p-5">
-          <li><Answer>{PROMPT}</Answer></li>
+        <ol role="log" aria-live="off" aria-label="Example interview" className="min-h-[34rem] space-y-6 pt-6">
 
           <AnimatePresence initial={false}>
             {STEPS.slice(0, shown).map((step) => {
@@ -131,7 +123,6 @@ export function InterviewDemo() {
                       round={ROUNDS[step.i]}
                       index={step.i}
                       active={waitingOn === step.i}
-                      picked={picks[step.i]}
                       hint={step.i === 0 && waitingOn === 0}
                       onChoose={(o) => choose(step.i, o)}
                     />
@@ -140,7 +131,7 @@ export function InterviewDemo() {
                   {step.kind === "brief" && <Brief />}
                   {step.kind === "yes" && <Answer>That&rsquo;s right.</Answer>}
                   {step.kind === "build" && (
-                    <p className="text-[14px] text-muted-foreground">Starting with the Monday email template.</p>
+                    <p className="text-[17px] text-brand-muted">Starting with the Monday email template.</p>
                   )}
                 </Enter>
               );
@@ -161,42 +152,34 @@ function announce(step: Step, picks: number[]) {
 }
 
 function Question({
-  round, index, active, picked, hint, onChoose,
-}: { round: Round; index: number; active: boolean; picked: number; hint: boolean; onChoose: (o: number) => void }) {
+  round, index, active, hint, onChoose,
+}: { round: Round; index: number; active: boolean; hint: boolean; onChoose: (o: number) => void }) {
   return (
     <div className="space-y-3">
       {round.note && (
-        <p className="flex items-start gap-2 rounded-lg bg-muted px-3 py-2 text-[13px] leading-snug text-muted-foreground">
+        <p className="flex items-start gap-2 text-[14px] leading-snug text-brand-muted">
           <FileSearch aria-hidden className="mt-px size-4 shrink-0" />
           {round.note}
         </p>
       )}
-      <p className="text-[16px] font-medium leading-snug">
+      <p className="font-display text-[clamp(1.35rem,2.4vw,1.75rem)] font-medium leading-tight tracking-[-0.01em]">
         <span className="sr-only">Question {index + 1} of {ROUNDS.length}: </span>
         {round.q}
       </p>
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Answers">
+      {/* Once answered, the options give way to your reply below, as in a real conversation. */}
+      {active && <div className="flex flex-wrap gap-2" role="group" aria-label="Answers">
         {round.options.map((o, oi) => (
           <button
             key={o}
             type="button"
-            disabled={!active}
-            aria-pressed={!active && picked === oi}
             onClick={() => onChoose(oi)}
-            className={cn(
-              "min-h-11 rounded-full border px-4 py-2 text-[14px] transition-[background-color,border-color,color,transform] duration-200 ease-out-quart",
-              active
-                ? "border-border hover:-translate-y-px hover:border-brand hover:bg-brand hover:text-brand-foreground active:translate-y-0"
-                : picked === oi
-                  ? "border-transparent bg-highlight text-highlight-foreground"
-                  : "border-transparent text-muted-foreground",
-            )}
+            className="min-h-11 rounded-full border border-brand-foreground/40 px-4 py-2 text-[15px] transition-[background-color,border-color,color,transform] duration-200 ease-out-quart hover:-translate-y-px hover:border-highlight hover:bg-highlight hover:text-highlight-foreground active:translate-y-0"
           >
             {o}
           </button>
         ))}
-      </div>
-      {hint && <p className="text-[13px] text-muted-foreground">Pick an answer. You&rsquo;re the one being interviewed.</p>}
+      </div>}
+      {hint && <p className="text-[14px] text-brand-muted">Pick one. Nothing happens for a few seconds if you don&rsquo;t.</p>}
     </div>
   );
 }
@@ -204,8 +187,8 @@ function Question({
 function Brief() {
   return (
     <div className="space-y-3">
-      <p className="text-[16px] font-medium leading-snug">Here&rsquo;s the brief. Does this capture it?</p>
-      <div className="rounded-xl bg-muted p-4">
+      <p className="font-display text-[clamp(1.35rem,2.4vw,1.75rem)] font-medium leading-tight tracking-[-0.01em]">Here&rsquo;s the brief. Does this capture it?</p>
+      <div className="max-w-xl rounded-xl bg-card p-5 text-foreground shadow-[0_8px_24px_-12px_oklch(0.15_0.1_264/0.5)]">
         <p className="font-display text-[18px] font-semibold">Weekly digest</p>
         <dl className="mt-3 space-y-2 text-[14px]">
           {BRIEF.map(([k, v]) => (
@@ -236,7 +219,7 @@ function Enter({ children, reduced }: { children: React.ReactNode; reduced: bool
 function Answer({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-end">
-      <p className="max-w-[85%] rounded-2xl rounded-br-md bg-highlight px-4 py-2.5 text-[15px] leading-snug text-highlight-foreground">
+      <p className="max-w-[85%] rounded-2xl rounded-br-md bg-highlight px-4 py-2.5 text-[16px] leading-snug text-highlight-foreground">
         <span className="sr-only">You: </span>
         {children}
       </p>

@@ -1,8 +1,5 @@
 # PRODUCT.md
 
-## Register
-A developer tool landing page. It's calm and literate, and it's confident without hype.
-
 ## Users
 People who work with coding agents (Claude Code, Codex, Cursor, Copilot, Gemini CLI and others) and have ideas that run ahead of their words. Agents also read the site: `/agents` and `/skill.md` are written for them.
 

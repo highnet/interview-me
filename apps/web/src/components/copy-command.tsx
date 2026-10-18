@@ -30,7 +30,7 @@ export function CopyCommand({ command, className }: { command: string; className
         type="button"
         onClick={copy}
         aria-label={`Copy ${command}`}
-        className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 font-sans text-[13px] font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
+        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 py-2 font-sans text-[13px] font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
       >
         {state === "copied" ? <Check className="size-4 text-brand-text" /> : <Copy className="size-4" />}
         <span className="hidden sm:inline">{state === "copied" ? "Copied" : state === "failed" ? "Select it" : "Copy"}</span>

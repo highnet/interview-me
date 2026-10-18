@@ -1,18 +1,20 @@
 import { AudienceFork } from "@/components/audience-fork";
 import { Bookshelf } from "@/components/bookshelf";
-import { CopyCommand } from "@/components/copy-command";
 import { InstallTabs } from "@/components/install-tabs";
 import { InterviewDemo } from "@/components/interview-demo";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { agents, repoUrl } from "@/lib/site";
 
-const AREAS = [
-  ["Core", "Who it's for, and what changes for them. One sentence you both agree on."],
-  ["The real challenge", "The problem under the request, which is often not the feature you asked for."],
-  ["Picture", "A real moment: the first screen, or the last time this got in your way."],
-  ["References", "What already comes close, and where it falls short."],
-  ["Edges", "What it must not be. If you say yes to this, what are you saying no to?"],
-  ["Success", "How you'll know, within ten seconds, that it's right."],
+// The six areas every interview covers, shown as the brief they produce.
+// Values are the weekly-digest answers from the hero interview.
+const BRIEF = [
+  { field: "Core", asks: "Who is it for, and what changes for them?", value: "A short Monday email showing teammates what they missed." },
+  { field: "The real challenge", asks: "What's the real challenge here for you?", value: "Teammates' work gets buried under notifications." },
+  { field: "Picture", asks: "Walk me through the last time this got in your way.", value: "Monday, 9am, coffee. One scroll and you're caught up." },
+  { field: "References", asks: "What's the closest thing out there?", value: "A good changelog: short, visual, one image." },
+  { field: "Edges", asks: "If you say yes to this, what are you saying no to?", value: "Never sent on quiet weeks. Never longer than one screen." },
+  { field: "Success", asks: "How will you know, within ten seconds, that it's right?", value: "People reply to it instead of archiving it." },
 ];
 
 const OPENERS = [
@@ -29,32 +31,12 @@ export default function Home() {
     <>
       <div className="bg-brand text-brand-foreground">
         <SiteHeader />
-        <main id="top">
-          <section aria-labelledby="hero-heading" className="mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-10 sm:px-8 lg:grid-cols-[1fr_minmax(0,30rem)] lg:gap-16 lg:pb-28 lg:pt-16">
-            <div className="min-w-0 lg:pt-6">
-              <AudienceFork
-                human={
-                  <>
-                    <h1 id="hero-heading" className="font-display text-[clamp(2.9rem,6.6vw,5.25rem)] font-semibold leading-[0.95] tracking-[-0.03em]">
-                      Agents can&rsquo;t read your&nbsp;mind. <span className="text-highlight">So let it&nbsp;ask.</span>
-                    </h1>
-                    <p className="mt-7 max-w-[34rem] text-[18px] leading-relaxed text-brand-muted">
-                      For the idea you can see but can&rsquo;t quite say. Your agent asks one question at a time until it can
-                      say your idea back and you answer &ldquo;that&rsquo;s right.&rdquo; Then it writes the brief and builds.
-                    </p>
-                    <div className="mt-8 max-w-[34rem]">
-                      <CopyCommand command="npx interview-me install" />
-                      <p className="mt-3 text-[14px] text-brand-muted">
-                        Adds one skill folder for each agent you use. <code className="font-mono text-[13px]">npx interview-me uninstall</code> removes it.
-                      </p>
-                    </div>
-                  </>
-                }
-              />
-            </div>
-            <div className="min-w-0">
-              <InterviewDemo />
-            </div>
+        <main id="top" className="mx-auto max-w-4xl px-5 pb-24 pt-8 sm:px-8 lg:pb-32 lg:pt-12">
+          <section aria-labelledby="hero-heading">
+            <AudienceFork />
+          </section>
+          <section aria-label="Try the interview" className="mt-16">
+            <InterviewDemo />
           </section>
         </main>
       </div>
@@ -66,7 +48,7 @@ export default function Home() {
             <h3 className="text-[15px] font-medium text-muted-foreground">Without</h3>
             <ol className="mt-4 space-y-3 text-[17px] leading-snug text-muted-foreground">
               <li>You describe it in two sentences.</li>
-              <li>The agent writes 400 lines straight away.</li>
+              <li>The agent builds straight away.</li>
               <li>It&rsquo;s confident, polished, and not what you meant.</li>
               <li className="text-foreground">You spend an hour explaining what you could have said up front.</li>
             </ol>
@@ -84,23 +66,47 @@ export default function Home() {
       </section>
 
       <section id="method" aria-labelledby="method-heading" className="scroll-mt-4 bg-muted">
-        <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8 lg:py-32">
-          <h2 id="method-heading" className={`${h2} max-w-3xl`}>Six things it needs to know, however long that&nbsp;takes.</h2>
-          <p className="mt-6 max-w-[36rem] text-[17px] leading-relaxed text-muted-foreground">
-            It works from broad to specific and skips anything you&rsquo;ve already answered. It stops when it can explain
-            your idea to a stranger and you&rsquo;d agree. Say &ldquo;just go&rdquo; and it writes the brief with the gaps marked.
-          </p>
-          <ol className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {AREAS.map(([title, body], i) => (
-              <li key={title} className="flex gap-4">
-                <span aria-hidden className="font-display text-[40px] font-semibold leading-none text-brand-text">{i + 1}</span>
-                <div className="pt-1">
-                  <h3 className="text-[18px] font-semibold">{title}</h3>
-                  <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">{body}</p>
+        <div className="mx-auto grid max-w-6xl gap-14 px-5 py-24 sm:px-8 lg:grid-cols-[1fr_1.35fr] lg:gap-20 lg:py-32">
+          <div className="lg:sticky lg:top-12 lg:self-start">
+            <h2 id="method-heading" className={h2}>Every interview ends in a&nbsp;brief.</h2>
+            <p className="mt-6 max-w-[34rem] text-[17px] leading-relaxed text-muted-foreground">
+              It covers six things, broad to specific, and skips anything you&rsquo;ve already answered. It stops when it
+              can explain your idea to a stranger and you&rsquo;d agree. Say &ldquo;just go&rdquo; and it writes the brief
+              with the gaps marked as assumptions.
+            </p>
+            <p className="mt-4 max-w-[34rem] text-[17px] leading-relaxed text-muted-foreground">
+              The highlighted lines are yours. Everything in the brief comes from your answers.
+            </p>
+          </div>
+
+          <article aria-label="Example brief" className="rounded-2xl bg-card p-6 shadow-[0_10px_30px_-18px_oklch(0.2_0.08_264/0.45)] sm:p-8">
+            <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border pb-5">
+              <h3 className="font-display text-[26px] font-semibold tracking-tight">Brief: weekly digest</h3>
+              <span className="font-mono text-[13px] text-muted-foreground">docs/briefs/weekly-digest.md</span>
+            </header>
+            <dl className="divide-y divide-border">
+              {BRIEF.map((b) => (
+                <div key={b.field} className="grid gap-1.5 py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                  <dt>
+                    <span className="block text-[15px] font-semibold">{b.field}</span>
+                  </dt>
+                  <dd className="space-y-2">
+                    <p className="text-[14px] text-muted-foreground">
+                      <span className="sr-only">The agent asks: </span>
+                      {b.asks}
+                    </p>
+                    <p className="text-[17px] leading-snug">
+                      <mark className="box-decoration-clone rounded-[3px] bg-highlight px-1 text-highlight-foreground">{b.value}</mark>
+                    </p>
+                  </dd>
                 </div>
-              </li>
-            ))}
-          </ol>
+              ))}
+            </dl>
+            <footer className="flex items-center justify-end gap-3 border-t border-border pt-5">
+              <span className="text-[14px] text-muted-foreground">Confirmed</span>
+              <span className="rounded-2xl rounded-br-md bg-highlight px-4 py-2 text-[15px] text-highlight-foreground">That&rsquo;s right.</span>
+            </footer>
+          </article>
         </div>
       </section>
 
@@ -141,31 +147,28 @@ export default function Home() {
       </section>
 
       <section id="install" aria-labelledby="install-heading" className="scroll-mt-4 bg-brand text-brand-foreground">
-        <div className="mx-auto grid max-w-6xl gap-14 px-5 py-24 sm:px-8 lg:grid-cols-2 lg:py-32">
-          <div className="min-w-0">
-            <h2 id="install-heading" className={h2}>Install it once. Ask for it when the idea is&nbsp;fuzzy.</h2>
-            <p className="mt-8 max-w-md rounded-2xl rounded-br-md bg-highlight px-5 py-4 text-[18px] leading-snug text-highlight-foreground">
-              I want a new onboarding flow. Use the interview-me skill to understand what I mean.
-            </p>
-            <p className="mt-10 text-[14px] text-brand-muted">Works with</p>
-            <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[15px]" aria-label="Supported agents">
-              {agents.map((a) => <li key={a.id}>{a.name}</li>)}
-            </ul>
-          </div>
-          <div className="min-w-0">
+        <div className="mx-auto max-w-3xl px-5 py-24 sm:px-8 lg:py-32">
+          <p className="ml-auto w-fit max-w-[30rem] rounded-2xl rounded-br-md bg-highlight px-5 py-3 text-[17px] leading-snug text-highlight-foreground">
+            <span className="sr-only">You: </span>
+            Next time my idea is fuzzy, interview me first.
+          </p>
+          <h2 id="install-heading" className={`${h2} mt-6`}>Install it once, and it&rsquo;s there when you need&nbsp;it.</h2>
+          <div className="mt-10">
             <InstallTabs />
           </div>
+          <p className="mt-12 text-[14px] text-brand-muted">Works with</p>
+          <p className="mt-2 max-w-2xl text-[16px] leading-relaxed">
+            {agents.map((a, i) => (
+              <span key={a.id}>
+                <span className="whitespace-nowrap">{a.name}</span>
+                {i < agents.length - 1 && <span aria-hidden className="px-2 text-brand-muted"> · </span>}{" "}
+              </span>
+            ))}
+          </p>
         </div>
       </section>
 
-      <footer className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-[14px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
-        <span>For people whose ideas are ahead of their words.</span>
-        <span className="flex gap-1">
-          <a href="/agents" className="flex min-h-11 items-center px-2 py-2 transition-colors hover:text-foreground">For agents</a>
-          <a href={`${repoUrl}/blob/main/LICENSE`} className="flex min-h-11 items-center px-2 py-2 transition-colors hover:text-foreground">MIT license</a>
-          <a href={repoUrl} className="flex min-h-11 items-center px-2 py-2 transition-colors hover:text-foreground">GitHub</a>
-        </span>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
