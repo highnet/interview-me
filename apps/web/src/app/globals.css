@@ -2,32 +2,44 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Scene: a reporter's notebook. Warm paper, graphite ink, one red pen. */
+/*
+ * Scene: a developer mid-afternoon, an idea half-formed, wanting to be understood
+ * before anything gets built. Committed strategy: one ultramarine carries the
+ * hero and the close; answers are marked like a highlighter on a transcript.
+ * Neutrals are tinted toward the brand hue (265), never toward "warm".
+ */
 :root {
-  --background: oklch(0.978 0.007 85);
-  --foreground: oklch(0.21 0.012 60);
-  --muted: oklch(0.945 0.009 85);
-  --muted-foreground: oklch(0.5 0.012 60);
-  --border: oklch(0.89 0.01 80);
-  --card: oklch(0.993 0.004 85);
-  --accent: oklch(0.63 0.185 38);
-  --accent-foreground: oklch(0.99 0.005 85);
-  --accent-soft: oklch(0.93 0.045 45);
-  --ring: oklch(0.63 0.185 38 / 0.5);
+  --background: oklch(0.985 0.004 265);
+  --foreground: oklch(0.2 0.03 265);
+  --muted: oklch(0.955 0.009 265);
+  --muted-foreground: oklch(0.46 0.03 265); /* 7.4:1 on background */
+  --border: oklch(0.89 0.014 265);
+  --card: oklch(1 0 0);
+  --brand: oklch(0.45 0.21 264); /* ultramarine; white text 7.6:1 */
+  --brand-deep: oklch(0.37 0.18 264);
+  --brand-text: oklch(0.45 0.21 264); /* brand used as text on the page background */
+  --brand-foreground: oklch(0.985 0.006 265);
+  --brand-muted: oklch(0.87 0.05 265); /* secondary text on brand, 4.9:1 */
+  --highlight: oklch(0.91 0.17 102); /* highlighter yellow */
+  --highlight-foreground: oklch(0.22 0.03 265);
+  --ring: oklch(0.62 0.19 264);
 }
 
-/* Night desk: same notebook under a lamp. */
 .dark {
-    --background: oklch(0.17 0.008 60);
-    --foreground: oklch(0.94 0.008 85);
-    --muted: oklch(0.22 0.009 60);
-    --muted-foreground: oklch(0.68 0.01 70);
-    --border: oklch(0.29 0.01 60);
-    --card: oklch(0.2 0.009 60);
-    --accent: oklch(0.7 0.17 40);
-    --accent-foreground: oklch(0.17 0.008 60);
-    --accent-soft: oklch(0.3 0.06 40);
-    --ring: oklch(0.7 0.17 40 / 0.5);
+  --background: oklch(0.165 0.028 265);
+  --foreground: oklch(0.95 0.01 265);
+  --muted: oklch(0.21 0.034 265);
+  --muted-foreground: oklch(0.75 0.03 265); /* 8.9:1 */
+  --border: oklch(0.31 0.04 265);
+  --card: oklch(0.205 0.034 265);
+  --brand: oklch(0.4 0.19 264);
+  --brand-deep: oklch(0.31 0.15 264);
+  --brand-text: oklch(0.76 0.13 264);
+  --brand-foreground: oklch(0.975 0.008 265);
+  --brand-muted: oklch(0.85 0.05 265);
+  --highlight: oklch(0.88 0.16 102);
+  --highlight-foreground: oklch(0.2 0.03 265);
+  --ring: oklch(0.7 0.16 264);
 }
 
 @theme inline {
@@ -37,13 +49,17 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-card: var(--card);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent-soft: var(--accent-soft);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-text: var(--brand-text);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-muted: var(--brand-muted);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
   --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-serif: var(--font-instrument-serif);
+  --font-display: var(--font-funnel-display), var(--font-geist-sans), ui-sans-serif, sans-serif;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -52,15 +68,12 @@
   body {
     background: var(--background);
     color: var(--foreground);
-    font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
   }
-  ::selection { background: var(--accent-soft); }
-}
-
-/* Steno-pad ruling, used behind the transcript. */
-@utility ruled {
-  background-image: repeating-linear-gradient(to bottom, transparent 0 27px, color-mix(in oklch, var(--border) 70%, transparent) 27px 28px);
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  ::selection { background: var(--highlight); color: var(--highlight-foreground); }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
