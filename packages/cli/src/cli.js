@@ -1,9 +1,10 @@
 import { cpSync, existsSync, rmSync } from "node:fs";
 import { homedir } from "node:os";
-import { delimiter, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createInterface } from "node:readline/promises";
 import { AGENTS, SKILL_NAME } from "./agents.js";
+import { detectHarnesses } from "./harness.js";
 
 const SKILL_SRC = fileURLToPath(new URL("../skill", import.meta.url));
 
@@ -16,18 +17,27 @@ Usage
   npx interview-me list        Show where it's installed
 
 Options
-  -a, --agent <ids>   Comma-separated: ${Object.keys(AGENTS).join(", ")}, or all
+  --harness <ids>     Comma-separated: ${Object.keys(AGENTS).join(", ")}
+  -a, --agent <ids>   Same as --harness
+  --all               Every supported harness
   -g, --global        Install to your home directory instead of this project
-  -y, --yes           Skip prompts and use the agents found in this project
+  -y, --yes           Skip prompts and use the harness(es) this project uses
   -h, --help          Show this help
+
+Without --harness or --all, install picks the harness you're running inside
+(Claude Code, Codex, Gemini CLI, OpenCode) plus any whose files are in the
+project (.claude/, CLAUDE.md, .gemini/, .github/copilot-instructions.md, ...).
+AGENTS.md counts only when nothing more specific is found. Falls back to the
+only agent CLI on your PATH, else Claude Code.
 `;
 
 export function parseArgs(argv) {
   const opts = { command: "help", agents: null, global: false, yes: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "-a" || a === "--agent") opts.agents = argv[++i]?.split(",").map((s) => s.trim());
-    else if (a.startsWith("--agent=")) opts.agents = a.slice(8).split(",");
+    if (a === "-a" || a === "--agent" || a === "--harness") opts.agents = argv[++i]?.split(",").map((s) => s.trim());
+    else if (a.startsWith("--agent=") || a.startsWith("--harness=")) opts.agents = a.slice(a.indexOf("=") + 1).split(",").map((s) => s.trim());
+    else if (a === "--all") opts.agents = ["all"];
     else if (a === "-g" || a === "--global") opts.global = true;
     else if (a === "-y" || a === "--yes") opts.yes = true;
     else if (a === "-h" || a === "--help") opts.command = "help";
@@ -49,13 +59,15 @@ export function projectScope(root) {
   return { root, dirOf: (id) => join(root, AGENTS[id].project) };
 }
 
-const onPath = (bin, env = process.env) =>
-  (env.PATH ?? "").split(delimiter).some((d) => d && ["", ".cmd", ".exe"].some((ext) => existsSync(join(d, bin + ext))));
+export function detectAgents(scope, opts = {}) {
+  return detectHarnesses(scope.root, opts).ids;
+}
 
-export function detectAgents(scope, { checkPath = true } = {}) {
-  return Object.entries(AGENTS)
-    .filter(([, a]) => a.detect.some((p) => existsSync(join(scope.root, p))) || (checkPath && onPath(a.bin)))
-    .map(([id]) => id);
+// What `install` writes to when no --harness/--all is given and nothing prompts.
+export function resolveInstall(scope, opts = {}) {
+  const found = detectHarnesses(scope.root, opts);
+  if (found.ids.length) return found;
+  return { ...found, ids: ["claude"], reasons: { claude: ["default: no harness detected"] } };
 }
 
 export function installedAgents(scope) {
@@ -73,6 +85,16 @@ export function installTo(scope, ids) {
   });
 }
 
+// "Claude Code → /repo/.claude/skills/interview-me", one line per folder written.
+export function describe(scope, ids) {
+  const byDest = new Map();
+  for (const id of ids) {
+    const dest = join(scope.dirOf(id), SKILL_NAME);
+    byDest.set(dest, [...(byDest.get(dest) ?? []), AGENTS[id].label]);
+  }
+  return [...byDest].map(([dest, labels]) => `${labels.join(", ")} → ${dest}`);
+}
+
 export function removeFrom(scope, ids) {
   return destinations(scope, ids).map((dest) => {
     rmSync(dest, { recursive: true, force: true });
@@ -80,11 +102,11 @@ export function removeFrom(scope, ids) {
   });
 }
 
-async function pickAgents(detected) {
+async function pickAgents(detected, path = []) {
   const ids = Object.keys(AGENTS);
   console.log("\nWhich agents should get the skill?\n");
   ids.forEach((id, i) => {
-    const mark = detected.includes(id) ? " (found)" : "";
+    const mark = detected.includes(id) ? " (found)" : path.includes(id) ? " (on PATH)" : "";
     console.log(`  ${i + 1}. ${AGENTS[id].label}${mark}`);
   });
   const fallback = detected.length ? detected : ["claude"];
@@ -110,10 +132,21 @@ export async function run(argv) {
 
   switch (opts.command) {
     case "install": {
-      const detected = detectAgents(scope);
       const interactive = !opts.yes && process.stdin.isTTY;
-      const ids = validate(opts.agents ?? (interactive ? await pickAgents(detected) : detected.length ? detected : ["claude"]));
-      for (const p of installTo(scope, ids)) console.log(`  ✓ ${p}`);
+      let ids = opts.agents;
+      if (!ids) {
+        const found = resolveInstall(scope);
+        if (interactive) ids = await pickAgents(found.ids, found.onPath);
+        else {
+          ids = found.ids;
+          console.log(`Detected: ${ids.map((id) => `${AGENTS[id].label} (${found.reasons[id].join(", ")})`).join("; ")}`);
+          console.log("Use --harness <ids> or --all to choose differently.\n");
+        }
+      }
+      validate(ids);
+      installTo(scope, ids);
+      console.log("Installed:");
+      for (const line of describe(scope, ids)) console.log(`  ✓ ${line}`);
       console.log(`\nDone. Next time an idea is fuzzy, tell your agent:\n  "Use the interview-me skill to understand what I mean."`);
       return 0;
     }
