@@ -38,7 +38,7 @@ export default function AgentsPage() {
             <CopyCommand command="npx interview-me install --yes" />
           </div>
           <p className="mt-3 text-[14px] text-brand-muted">
-            <code className="font-mono text-[13px]">--yes</code> installs for every agent found in the project, without asking.
+            <code className="font-mono text-[13px]">--yes</code> installs, without asking, for the harness you run it from and any whose files are in the project. Add <code className="font-mono text-[13px]">--harness claude</code> to pick, or <code className="font-mono text-[13px]">--all</code> for every one.
           </p>
         </div>
       </div>
