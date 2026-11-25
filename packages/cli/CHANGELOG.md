@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/highnet/interview-me/compare/v0.2.0...v0.2.1) (2026-11-25)
+
+
+### Bug Fixes
+
+* **cli:** install only for the harness(es) in use ([#9](https://github.com/highnet/interview-me/issues/9)) ([dc82c53](https://github.com/highnet/interview-me/commit/dc82c53a653c441ffe88be6fab937a4eb816f41d))
+
 ## [0.2.0](https://github.com/highnet/interview-me/compare/v0.1.0...v0.2.0) (2026-10-18)
 
 
